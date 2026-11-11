@@ -1,0 +1,337 @@
+/* Tampilan: secarik kertas catatan belanja di atas hijau daun pisang.
+   Barang ditulis dengan tinta biru dan dicoret dengan pulpen merah. */
+
+:root {
+  color-scheme: light;
+  --leaf: #24533b;      /* latar halaman: hijau daun pisang */
+  --paper: #fcfdfb;     /* kertas catatan */
+  --ink: #1d3570;       /* tinta pulpen biru */
+  --pencil: #5f6880;    /* teks pendukung */
+  --rule: #d5def0;      /* garis buku tulis */
+  --chili: #c62d1f;     /* coretan dan tombol hapus */
+  --turmeric: #f2c14e;  /* penanda "terhubung" */
+  --highlight: #fbe3a0; /* stabilo untuk barang yang baru masuk */
+  --on-leaf: #eef4ef;   /* teks di atas latar hijau */
+  --font: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --leaf: #1b4430;
+    --paper: #1d2226;
+    --ink: #b9c8f2;
+    --pencil: #9aa3b5;
+    --rule: #313b46;
+    --chili: #ff8a7a;
+    --highlight: #5a4815;
+    --on-leaf: #e3ece5;
+  }
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--leaf);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 1rem;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+button, input { font: inherit; color: inherit; }
+button { cursor: pointer; }
+
+:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.page {
+  width: min(100% - 2rem, 34rem);
+  margin-inline: auto;
+  padding-block: clamp(1.5rem, 6vh, 4.5rem) 4rem;
+}
+
+/* ---------- Status koneksi (di atas kertas) ---------- */
+.presence {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 1rem;
+  font-size: 0.875rem;
+  color: var(--on-leaf);
+}
+
+.presence-dot {
+  flex: none;
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: 50%;
+  background: var(--on-leaf);
+  opacity: 0.45;
+}
+
+.presence[data-state="online"] .presence-dot {
+  background: var(--turmeric);
+  opacity: 1;
+}
+
+/* Saat terputus, titiknya jadi lingkaran kosong (tidak hanya beda warna) */
+.presence[data-state="offline"] .presence-dot {
+  background: transparent;
+  border: 2px solid var(--on-leaf);
+  opacity: 1;
+}
+
+/* ---------- Kertas catatan ---------- */
+.slip {
+  position: relative;
+  padding: clamp(1.5rem, 6vw, 2.5rem) clamp(1.25rem, 6vw, 2.5rem) 1.75rem;
+  background: var(--paper);
+  filter: drop-shadow(0 16px 22px rgb(0 0 0 / 0.28));
+}
+
+/* Tepi bawah bergerigi seperti kertas yang disobek dari bloknot */
+.slip::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  height: 0.75rem;
+  background: var(--paper);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 2 1' preserveAspectRatio='none'%3E%3Cpath d='M0 0h2L1 1z'/%3E%3C/svg%3E") 0 0 / 1.5rem 100% round no-repeat;
+          mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 2 1' preserveAspectRatio='none'%3E%3Cpath d='M0 0h2L1 1z'/%3E%3C/svg%3E") 0 0 / 1.5rem 100% round no-repeat;
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(2.25rem, 10vw, 3rem);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+}
+
+.intro {
+  max-width: 34ch;
+  margin: 0.625rem 0 0;
+  color: var(--pencil);
+}
+
+/* ---------- Form tambah barang ---------- */
+.add-form {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1.75rem;
+}
+
+.add-form input {
+  flex: 1;
+  min-width: 0;
+  padding: 0.5rem 0.125rem;
+  font-size: 1.125rem;
+  background: transparent;
+  border: 0;
+  border-bottom: 2px solid var(--ink);
+  border-radius: 0;
+}
+
+.add-form input::placeholder { color: var(--pencil); opacity: 1; }
+
+.add-form input:focus-visible {
+  outline: none;
+  box-shadow: inset 0 -2px 0 var(--ink); /* garis bawah menebal saat fokus */
+}
+
+.add-form button {
+  flex: none;
+  padding: 0.625rem 1.25rem;
+  font-weight: 700;
+  color: var(--paper);
+  background: var(--ink);
+  border: 0;
+  border-radius: 6px;
+}
+
+.add-form button:hover { background: color-mix(in srgb, var(--ink) 82%, var(--paper)); }
+.add-form button:disabled { cursor: progress; opacity: 0.6; }
+
+/* ---------- Filter ---------- */
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1.25rem;
+  margin: 1.75rem 0 0.5rem;
+}
+
+.filters button {
+  padding: 0.25rem 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--pencil);
+  background: none;
+  border: 0;
+  border-bottom: 2px solid transparent;
+}
+
+.filters button:hover { color: var(--ink); }
+
+.filters button[aria-pressed="true"] {
+  color: var(--ink);
+  border-bottom-color: var(--ink);
+}
+
+/* ---------- Daftar barang (di atas garis buku tulis) ---------- */
+.items {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--rule);
+}
+
+.item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.item input[type="checkbox"] {
+  flex: none;
+  width: 1.25rem;
+  height: 1.25rem;
+  margin: 0.22rem 0 0;
+  accent-color: var(--ink);
+  cursor: pointer;
+}
+
+.item label {
+  flex: 1;
+  min-width: 0;
+  font-size: 1.125rem;
+  font-weight: 500;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+
+.item-name {
+  padding: 0 0.15em;
+  margin: 0 -0.15em;
+}
+
+/* Coretan pulpen merah */
+.is-bought .item-name {
+  color: var(--pencil);
+  text-decoration-line: line-through;
+  text-decoration-color: var(--chili);
+  text-decoration-thickness: 2px;
+}
+
+/* Animasi hanya untuk perubahan yang baru saja terjadi (ditandai oleh app.js) */
+.is-bought.is-toggled .item-name { animation: cross-off 0.45s ease-out; }
+.is-new .item-name { animation: highlight 2.4s ease-out; }
+
+@keyframes cross-off {
+  from { color: var(--ink); text-decoration-color: transparent; }
+}
+
+@keyframes highlight {
+  0%, 45% { background-color: var(--highlight); }
+  100%    { background-color: transparent; }
+}
+
+.remove {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  margin: -0.125rem -0.375rem 0 0;
+  font-size: 1.375rem;
+  line-height: 1;
+  color: var(--pencil);
+  background: none;
+  border: 0;
+  border-radius: 50%;
+}
+
+.remove:hover { color: var(--chili); }
+
+.empty {
+  margin: 0;
+  padding: 1.25rem 0;
+  color: var(--pencil);
+  border-bottom: 1px solid var(--rule);
+}
+
+/* ---------- Bagian bawah kertas ---------- */
+.slip-footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.5rem 1rem;
+  margin-top: 1.25rem;
+  font-size: 0.875rem;
+  color: var(--pencil);
+}
+
+.clear {
+  padding: 0;
+  font-weight: 600;
+  color: var(--chili);
+  background: none;
+  border: 0;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+/* ---------- Pesan error ---------- */
+.toast {
+  position: fixed;
+  left: 1rem;
+  right: 1rem;
+  bottom: 1.5rem;
+  width: fit-content;
+  max-width: 28rem;
+  margin-inline: auto;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--paper);
+  background: var(--ink);
+  border-radius: 8px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(0.75rem);
+  transition: opacity 0.2s, transform 0.2s, visibility 0.2s;
+}
+
+.toast.is-visible {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}

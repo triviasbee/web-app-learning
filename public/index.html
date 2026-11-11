@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Daftar Belanja Bersama</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400..800&display=swap">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="page">
+    <p id="presence" class="presence" data-state="connecting" role="status">
+      <span class="presence-dot" aria-hidden="true"></span>
+      <span id="presence-text">Menghubungkan…</span>
+    </p>
+
+    <section class="slip" aria-labelledby="title">
+      <header>
+        <h1 id="title">Daftar belanja</h1>
+        <p class="intro">Satu daftar untuk serumah: yang di rumah menambah, yang di pasar mencoret.</p>
+      </header>
+
+      <form id="add-form" class="add-form" autocomplete="off">
+        <label for="item-name" class="visually-hidden">Barang yang mau dibeli</label>
+        <input id="item-name" type="text" placeholder="Contoh: telur 1 kg" maxlength="100" required>
+        <button type="submit">Tambah</button>
+      </form>
+
+      <div class="filters" role="group" aria-label="Tampilkan barang">
+        <button type="button" data-filter="all" aria-pressed="true">Semua</button>
+        <button type="button" data-filter="todo" aria-pressed="false">Belum dibeli</button>
+        <button type="button" data-filter="bought" aria-pressed="false">Sudah dibeli</button>
+      </div>
+
+      <ul id="item-list" class="items"></ul>
+      <p id="empty-state" class="empty" hidden></p>
+
+      <footer class="slip-footer">
+        <span id="remaining"></span>
+        <button type="button" id="clear-bought" class="clear" hidden>Hapus yang sudah dibeli</button>
+      </footer>
+    </section>
+  </main>
+
+  <div id="toast" class="toast" role="alert"></div>
+
+  <!-- Cetakan untuk satu baris barang; diisi dan digandakan oleh app.js -->
+  <template id="item-template">
+    <li class="item">
+      <input type="checkbox">
+      <label><span class="item-name"></span></label>
+      <button type="button" class="remove">×</button>
+    </li>
+  </template>
+
+  <!-- File ini disediakan otomatis oleh Socket.IO di server, tidak perlu diunduh -->
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
